@@ -232,6 +232,7 @@
     });
 
     function submitGrievance() {
+      const name = document.getElementById("name").value.trim();
       const title = document.getElementById("title").value.trim();
       const message = document.getElementById("message").value.trim();
       const mood = document.getElementById("mood").value;
@@ -246,7 +247,8 @@
       fetch("https://sheetdb.io/api/v1/5o1tnufem6odo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: [{ title, message, mood }] })
+        body: JSON.stringify({ data: [{ name, title, message, mood }] })
+
       })
       .then(res => res.json())
       .then(() => {
