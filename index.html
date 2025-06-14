@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grievance for Ishanvi</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ffe6f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+      position: relative;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: hotpink;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: deeppink;
+    }
+
+    .thankyou {
+      display: none;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .quote {
+      margin-top: 15px;
+      font-style: italic;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .mood-response {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .loader {
+      display: none;
+      margin-top: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .heart {
+      width: 50px;
+      height: 50px;
+      background: hotpink;
+      position: relative;
+      transform: rotate(45deg);
+      animation: pulse 1s infinite;
+    }
+
+    .heart::before, .heart::after {
+      content: "";
+      width: 50px;
+      height: 50px;
+      background: hotpink;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .heart::before {
+      top: -25px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -25px;
+      top: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) rotate(45deg); }
+      50% { transform: scale(1.1) rotate(45deg); }
+    }
+
+    .rose {
+      position: absolute;
+      top: -50px;
+      font-size: 24px;
+      animation: fall 5s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    .welcome {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      min-height: 24px;
+    }
+
+    .pledge {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #444;
+      border-top: 1px dashed #ccc;
+      padding-top: 10px;
+    }
+
+    @media (max-width: 360px) {
+      .container {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="formContainer">
+    <div class="welcome" id="welcomeMessage">Hi Ishanvi 👋</div>
+    <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif" style="width: 100px; height: 100px;" alt="Cute"/>
+    <h2>Ishanvi Submit a Grievance 🌹</h2>
+
+    <input type="text" placeholder="Title" id="title" />
+    <textarea placeholder="What's bothering you?" id="message"></textarea>
+
+    <label for="mood">Mood:</label>
+    <select id="mood" name="mood" required>
+      <option value="😊 Happy">😊 Happy</option>
+      <option value="😢 Sad">😢 Sad</option>
+      <option value="🤗 Excited">🤗 Excited</option>
+      <option value="😡 Angry">😡 Angry</option>
+      <option value="😞 Disappointed">😞 Disappointed</option>
+    </select>
+
+    <div class="mood-response" id="moodResponse"></div>
+
+    <button onclick="submitGrievance()">Submit 💌</button>
+
+    <div class="loader" id="loader">
+      <div class="heart"></div>
+    </div>
+
+    <div class="quote" id="quoteBox"></div>
+
+    <div class="pledge">
+      📝 I, Gautam, promise to listen to every grievance with my full heart and respond with kindness, snacks, and memes.<br>
+      — Gautam 💖
+    </div>
+  </div>
+
+  <div class="container thankyou" id="thankYouMessage">
+    <h2>Thank you, Ishanvi 💖</h2>
+    <p>Your grievance has been sent to Gautam 💌<br>
+    He will get back to you very soon!<br>(He will think about it)</p>
+    <button onclick="goBack()">Submit Another</button>
+  </div>
+
+  <div id="roseContainer"></div>
+  <audio id="ding" src="https://www.fesliyanstudios.com/play-mp3/6679" preload="auto"></audio>
+
+  <script>
+    const moodMessage = {
+      "😊 Happy": "Yay! I'm so happy you're happy 😄",
+      "😢 Sad": "Aww, sending hugs 🤗",
+      "😞 Disappointed": "I'm listening carefully... 💗",
+      "😡 Angry": "Tell me everything 😤 I’ll fix it!",
+      "🤗 Excited": "I’m excited with you! 🎉"
+    };
+
+    const quotes = [
+      "💌 Love is not about how many days, months, or years... it's about how much you love each day.",
+      "💖 In your smile, I see something more beautiful than stars.",
+      "🌸 Every moment with you is a memory I cherish.",
+      "💕 You are the sunshine in my rainy days.",
+      "💫 Just like the moon, I’ll be with you through all phases."
+    ];
+
+    const welcomeLines = [
+      "Hi Ishanvi 👋, tell Gautam what’s on your heart today 💌",
+      "ishanvi ji 🌷, I’m all ears!",
+      "ishanvi ji 💖, how can I brighten your day?",
+      "Hey ishanvi 💖, what's going on in that mind of yours?"
+    ];
+
+    let index = 0;
+
+    function typeWriter(text, i, fnCallback) {
+      if (i < text.length) {
+        document.getElementById("welcomeMessage").innerHTML = text.substring(0, i+1);
+        setTimeout(() => typeWriter(text, i + 1, fnCallback), 50);
+      } else if (typeof fnCallback === 'function') {
+        setTimeout(fnCallback, 2000);
+      }
+    }
+
+    function startTypingAnimation() {
+      typeWriter(welcomeLines[index % welcomeLines.length], 0, () => {
+        index++;
+        startTypingAnimation();
+      });
+    }
+
+    document.getElementById("mood").addEventListener("change", function () {
+      const mood = this.value;
+      document.getElementById("moodResponse").textContent = moodMessage[mood] || "";
+    });
+
+    function submitGrievance() {
+      const title = document.getElementById("title").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const mood = document.getElementById("mood").value;
+
+      if (!title || !message) {
+        alert("Please fill in both the title and the message.");
+        return;
+      }
+
+      document.getElementById("loader").style.display = "flex";
+
+      fetch("https://sheetdb.io/api/v1/5o1tnufem6odo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [{ title, message, mood }] })
+      })
+      .then(res => res.json())
+      .then(() => {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("formContainer").style.display = "none";
+        document.getElementById("thankYouMessage").style.display = "block";
+        document.getElementById("ding").play();
+        rainRoses();
+      });
+    }
+
+    function goBack() {
+      document.getElementById("formContainer").style.display = "block";
+      document.getElementById("thankYouMessage").style.display = "none";
+    }
+
+    function rainRoses() {
+      for (let i = 0; i < 20; i++) {
+        const rose = document.createElement("div");
+        rose.className = "rose";
+        rose.style.left = Math.random() * 100 + "vw";
+        rose.style.animationDelay = Math.random() * 2 + "s";
+        rose.textContent = "🌹";
+        document.body.appendChild(rose);
+
+        setTimeout(() => rose.remove(), 5000);
+      }
+    }
+
+    document.getElementById("quoteBox").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    startTypingAnimation();
+  </script>
+</body>
+</html>
